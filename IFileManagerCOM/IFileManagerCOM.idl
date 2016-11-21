@@ -1,0 +1,84 @@
+// IFileManagerCOM.idl : IDL source for IFileManagerCOM
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (IFileManagerCOM.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+import "enums.idl";
+import "IFileEntry.idl";
+
+[
+	object,
+	uuid(a817e7a2-43fa-11d0-9e44-00aa00b6770a),
+	dual,	
+	pointer_default(unique)
+]
+interface IComponentRegistrar : IDispatch
+{
+	[id(1)]	HRESULT Attach([in] BSTR bstrPath);
+	[id(2)]	HRESULT RegisterAll();
+	[id(3)]	HRESULT UnregisterAll();
+	[id(4)]	HRESULT GetComponents([out] SAFEARRAY(BSTR)* pbstrCLSIDs, [out] SAFEARRAY(BSTR)* pbstrDescriptions);
+	[id(5)]	HRESULT RegisterComponent([in] BSTR bstrCLSID);
+	[id(6)] HRESULT UnregisterComponent([in] BSTR bstrCLSID);
+};
+
+[
+	object,
+	uuid(ACC8DE46-4E6A-4B1A-B234-3C47579CDB37),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IFileManager : IDispatch
+{
+  [id(1)] HRESULT hello_world([out] BSTR *str);
+
+  [id(2)] HRESULT file_list([in] BSTR file_path,
+                            [in] int file_list_options,
+                            [out] SAFEARRAY(IFileEntry)* file_entry_list);
+
+  [id(3)] HRESULT create_file([in] BSTR path_src);
+  [id(4)] HRESULT create_folder([in] BSTR folder_path);
+  [id(5)] HRESULT copy_file([in] BSTR file_path_src, [in] BSTR file_path_dst);
+  [id(6)] HRESULT rename_file([in] BSTR file_path_src, [in] BSTR file_path_dst);
+  [id(7)] HRESULT delete_file([in] BSTR file_path);
+  [id(8)] HRESULT get_entry([in] BSTR file_path, [out] IFileEntry** file_entry);
+};
+
+
+[
+	uuid(919A1956-E43C-473B-95D4-C5686E3E81CB),
+	version(1.0),
+	custom(a817e7a1-43fa-11d0-9e44-00aa00b6770a,"{9EB77A10-A350-45C0-B7B0-AFD6937C4174}")
+]
+library IFileManagerCOMLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(9EB77A10-A350-45C0-B7B0-AFD6937C4174)		
+	]
+	coclass CompReg
+	{
+		[default] interface IComponentRegistrar;
+	};
+	[
+		uuid(EEC62346-FC1D-4D07-AA39-DB82955CA940)		
+	]
+	coclass FileManager
+	{
+		[default] interface IFileManager;
+	};
+	[
+		uuid(BFF890DD-E557-412F-8085-F52789648732)		
+	]
+	coclass FileEntry
+	{
+		[default] interface IFileEntry;
+	};
+};
+
+import "shobjidl.idl";

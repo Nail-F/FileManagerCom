@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="IFileManagerCOM" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="IFileManagerCOM" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_USRDLL" />
+					<Add option="-D_MERGE_PROXYSTUB" />
+					<Add directory="$(SolutionDir)../usr/include" />
+					<Add directory="$(VCInstallDir)include" />
+					<Add directory="$(VCInstallDir)atlmfc/include" />
+					<Add directory="$(WindowsSDK_IncludePath)" />
+				</Compiler>
+				<Linker>
+					<Add library="comsvcs.lib" />
+					<Add directory="$(SolutionDir)../usr/lib/$(Configuration)" />
+					<Add directory="$(VCInstallDir)lib" />
+					<Add directory="$(VCInstallDir)atlmfc/lib" />
+					<Add directory="$(WindowsSDK_LibraryPath_x86)" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="IFileManagerCOM" prefix_auto="1" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_USRDLL" />
+					<Add option="-D_MERGE_PROXYSTUB" />
+				</Compiler>
+				<Linker>
+					<Add library="comsvcs.lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="FileEntry.cpp" />
+		<Unit filename="FileEntry.h" />
+		<Unit filename="FileEntry.rgs" />
+		<Unit filename="FileManager.cpp" />
+		<Unit filename="FileManager.h" />
+		<Unit filename="FileManager.rgs" />
+		<Unit filename="IFileEntry.h" />
+		<Unit filename="IFileEntry_i.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IFileEntry_p.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IFileManagerCOM.cpp" />
+		<Unit filename="IFileManagerCOM.def" />
+		<Unit filename="IFileManagerCOM.h" />
+		<Unit filename="IFileManagerCOM.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="IFileManagerCOM.rgs" />
+		<Unit filename="IFileManagerCOM_i.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="IFileManagerCOM_p.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="compreg.cpp" />
+		<Unit filename="compreg.h" />
+		<Unit filename="dllmain.cpp" />
+		<Unit filename="dllmain.h" />
+		<Unit filename="enums.h" />
+		<Unit filename="resource.h" />
+		<Unit filename="stdafx.cpp" />
+		<Unit filename="stdafx.h" />
+		<Unit filename="targetver.h" />
+		<Unit filename="xdlldata.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xdlldata.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

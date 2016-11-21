@@ -1,0 +1,43 @@
+import "oaidl.idl";
+import "ocidl.idl";
+
+enum enum_file_type
+{
+  FT_STATUS_ERROR,
+  FT_FILE_NOT_FOUND,
+  FT_REGULAR_FILE,
+  FT_DIRECTORY_FILE,
+  FT_SYMLINK_FILE,
+  FT_BLOCK_FILE,
+  FT_CHARACTER_FILE,
+  FT_FIFO_FILE,
+  FT_SOCKET_FILE,
+  FT_REPARSE_FILE,
+  FT_TYPE_UNKNOWN,
+  FT__DETAIL_DIRECTORY_SYMLINK,
+  FT_DRIVE_NO_ROOT_DIR,
+  FT_DRIVE_REMOVABLE,
+  FT_DRIVE_FIXED,
+  FT_DRIVE_REMOTE,
+  FT_DRIVE_CDROM,
+  FT_DRIVE_RAMDISK,
+  FT_UNKNOWN,
+};
+
+enum enum_permissions
+{
+  P_NONE  = 0x0,
+  P_READ  = 0x1,
+  P_WRITE = 0x2,
+  P_EXEC  = 0x4,
+  P_ALL   = 0x7,
+};
+
+enum enum_error
+{
+  E_SUCCESS,// = ERROR_SUCCESS,
+  E_FILE_NOT_FOUND,// = ERROR_FILE_NOT_FOUND,
+  E_PATH_NOT_FOUND,// = ERROR_PATH_NOT_FOUND,
+  E_ACCESS_DENIED,// = ERROR_ACCESS_DENIED,
+  //and so on
+};
