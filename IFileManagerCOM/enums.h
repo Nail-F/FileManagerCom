@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0595 */
-/* at Sat Nov 19 09:59:33 2016
+/* at Mon Nov 21 12:42:18 2016
  */
 /* Compiler settings for enums.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0595 

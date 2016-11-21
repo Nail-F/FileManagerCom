@@ -42,14 +42,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\usr\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)..\usr\lib\$(Configuration);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <IncludePath>$(SolutionDir)usr\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)usr\lib\$(Configuration);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\usr\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)..\usr\lib\$(Configuration);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <IncludePath>$(SolutionDir)usr\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)usr\lib\$(Configuration);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -190,9 +190,20 @@
     <Midl Include="IFileManagerCOM.idl">
       <IgnoreStandardIncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</IgnoreStandardIncludePath>
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="enums.idl" />
-    <Midl Include="IFileEntry.idl" />
+    <Midl Include="enums.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Midl Include="IFileEntry.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)_p.c</ProxyFileName>
+    </Midl>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
