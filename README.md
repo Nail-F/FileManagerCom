@@ -15,7 +15,7 @@ Supported commands:
 copy files or folders, 
 rename (move) the folder and file 
 deleting folders (recursive) and files 
-to create the folder and file (a text file with the text: «! Created file from FileManagerCOM») 
+to create the folder and file (a text file with the text: «Created file from FileManagerCOM») 
 display the list of folders and files in the specified directory 
 
 Procedure: 
