@@ -238,7 +238,7 @@ int _tmain(int argc, _TCHAR* argv[])
       {
         int count = -1;
         count = _wtoi(out_param2);
-        if (count < 0)
+        if (count <= 0)
         {
           continue;
         }
