@@ -29,7 +29,7 @@ class ATL_NO_VTABLE CFileEntry :
 {
 public:
   CFileEntry();
-  CFileEntry(const std::wstring& file_path, int file_type = FT_UNKNOWN, int permissions = P_NONE, std::size_t size_bytes = 0, std::time_t created_date = 0, std::time_t modified_date = 0);
+  CFileEntry(const std::wstring& file_path, int file_type = FT_UNKNOWN, int permissions = no_perms, std::size_t size_bytes = 0, std::time_t created_date = 0, std::time_t modified_date = 0);
 
 
   DECLARE_REGISTRY_RESOURCEID(IDR_FILEENTRY)
@@ -53,25 +53,18 @@ public:
   }
 
 public:
-  STDMETHOD(init)(const std::wstring& file_path, int file_type = FT_UNKNOWN, int permissions = P_NONE, std::size_t size_bytes = 0, std::time_t created_date = 0, std::time_t modified_date = 0);
+  STDMETHOD(init)(const std::wstring& file_path, 
+                  int file_type = FT_UNKNOWN, 
+                  int permissions = no_perms, 
+                  std::size_t size_bytes = 0, 
+                  std::time_t created_date = 0, 
+                  std::time_t modified_date = 0);
 
-  /*
-  HRESULT STDMETHODCALLTYPE FileEntry::file_path(IFilePath **file_path)
-  {
-  return S_OK;
-  }
-  */
   STDMETHOD(name)(BSTR *file_name);
   STDMETHOD(extension)(BSTR *ext_name);
   STDMETHOD(permissions)(int *perms);
   STDMETHOD(type)(int *file_type);
   STDMETHOD(size)(__int64 *size_bytes);
-  /*
-  STDMETHOD(set_permitions)(int new_permitions)
-  {
-  return S_OK;
-  }
-  */
   STDMETHOD(created)(__int64* date);
   STDMETHOD(modified)(__int64* date);
   STDMETHOD(exists)();
@@ -79,12 +72,12 @@ public:
 
 
 private:
-  std::wstring  file_path_;
-  int           file_type_;
-  int           permissions_;
-  std::size_t   size_bytes_;
-  std::time_t   created_date_;
-  std::time_t   modified_date_;
+  std::wstring     file_path_;
+  int              file_type_;
+  enum_permissions permissions_;
+  std::size_t      size_bytes_;
+  std::time_t      created_date_;
+  std::time_t      modified_date_;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(FileEntry), CFileEntry)

@@ -24,6 +24,7 @@ const BSTR CONST_COMMAND_LIST = L"ls ";
 const BSTR CONST_COMMAND_CREATE_FOLDER = L"mkdir ";
 const BSTR CONST_COMMAND_CREATE_FILE = L"mkfile ";
 const BSTR CONST_COMMAND_HELP = L"help";
+const BSTR CONST_COMMAND_TEST = L"test";
 
 const int CONST_HEADER_NAME_SIZE = 70;
 const int CONST_HEADER_TYPE_SIZE = 10;
@@ -44,7 +45,7 @@ struct ComRaii
 };
 
 void print_help();
-std::string GetLastErrorAsString();
+std::string GetLastErrorAsString(IFileManager * p_manager = NULL);
 void erase_quotes(std::wstring &str);
 bool IS_0(const WCHAR *inbound, const WCHAR *command);
 bool IS_1(const WCHAR *inbound, const WCHAR *command, WCHAR **out_param);
@@ -59,13 +60,17 @@ int _tmain(int argc, _TCHAR* argv[])
 
   CComPtr<IFileManager> p_manager;
   HRESULT hr = CoCreateInstance(CLSID_FileManager, NULL, CLSCTX_INPROC_SERVER, IID_IFileManager, (LPVOID*)&p_manager);
-  if (SUCCEEDED(hr) && p_manager)
+  if (!hr && p_manager)
   {
     CComBSTR str;
     hr = p_manager->hello_world(&str);
-    if (SUCCEEDED(hr))
+    if (!hr)
     {
       std::wcout << str.m_str << std::endl;
+    }
+    else
+    {
+      std::cout << "error occured: " << p_manager->last_error() << std::endl;
     }
 
     CComBSTR command(3 * MAX_PATH);
@@ -119,14 +124,14 @@ int _tmain(int argc, _TCHAR* argv[])
       {
         LPSAFEARRAY p_list = NULL;
         hr = p_manager->file_list(out_param1, NULL, &p_list);
-        if (IS_ERROR(hr))
+        if (hr)
         {
-          std::cout << "Getting list failed with error: " << hr << std::endl;
+          std::cout << "Getting list failed with error: " << p_manager->last_error() << std::endl;
           continue;
         }
         CComSafeArray<VARIANT> list;
         list.Attach(p_list);
-        if (SUCCEEDED(hr))
+        if (!hr)
         {
           std::wstring name(L"name");
           name.resize(CONST_HEADER_NAME_SIZE, L' ');
@@ -152,6 +157,10 @@ int _tmain(int argc, _TCHAR* argv[])
             if (v.vt == VT_UNKNOWN)
             {
               IFileEntry* entry = (IFileEntry*)v.punkVal;
+              if (!entry)
+              {
+                continue;
+              }
               BSTR c_name;
               entry->name(&c_name);
               name = c_name;
@@ -216,7 +225,6 @@ int _tmain(int argc, _TCHAR* argv[])
             }
           }
         }
-
       }
       else if (IS_1(command, CONST_COMMAND_CREATE_FOLDER, &out_param1))
       {
@@ -226,19 +234,41 @@ int _tmain(int argc, _TCHAR* argv[])
       {
         hr = p_manager->create_file(out_param1);
       }
+      else if (IS_2(command, CONST_COMMAND_TEST, &out_param1, &out_param2))
+      {
+        int count = -1;
+        count = _wtoi(out_param2);
+        if (count < 0)
+        {
+          continue;
+        }
+
+        hr = S_OK;
+        while (!hr && count--)
+        {
+          LPSAFEARRAY p_list = NULL;
+          hr = p_manager->file_list(out_param1, NULL, &p_list);
+          if (!hr)
+          {
+            CComSafeArray<VARIANT> list;
+            list.Attach(p_list);
+            std::cout << count <<") Getting list with " << list.GetCount() << " elements" << std::endl;
+          }
+        }
+      }
       else
       {
         std::wcout << "Misunderstood command. Please retry!" << std::endl;
       }
 
-      if (IS_ERROR(hr))
+      if (hr)
       {
-        std::cout << "Error:\n" << GetLastErrorAsString() << std::endl;
+        std::cout << "Error:\n" << GetLastErrorAsString(p_manager) << std::endl;
       }
     }
   }
 
-  if (IS_ERROR(hr))
+  if (hr)
   {
     std::cout << "Error:\n" << GetLastErrorAsString() << std::endl;
   }
@@ -261,10 +291,19 @@ void print_help()
   std::wcout << L"========" << std::endl;
 }
 
-std::string GetLastErrorAsString()
+std::string GetLastErrorAsString(IFileManager * p_manager)
 {
   //Get the error message, if any.
-  DWORD errorMessageID = ::GetLastError();
+  DWORD errorMessageID = NOERROR;
+  if (p_manager)
+  {
+    errorMessageID = p_manager->last_error();
+  }
+  else
+  {
+    errorMessageID = ::GetLastError();
+  }
+
   if(errorMessageID == 0)
     return std::string(); //No error message has been recorded
 

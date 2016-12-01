@@ -21,9 +21,7 @@ class ATL_NO_VTABLE CFileManager :
   public IDispatchImpl<IFileManager, &IID_IFileManager, &LIBID_IFileManagerCOMLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
 {
 public:
-  CFileManager()
-  {
-  }
+  CFileManager();
 
   DECLARE_REGISTRY_RESOURCEID(IDR_FILEMANAGER)
 
@@ -46,6 +44,12 @@ public:
   {
   }
 
+private:
+  HRESULT last_error_;
+
+protected:
+  STDMETHODIMP set_last_error(HRESULT error_code);
+
 public:
   STDMETHODIMP hello_world(BSTR *str_in);
   STDMETHODIMP file_list(BSTR file_path, int file_list_options, SAFEARRAY** file_entries);
@@ -55,6 +59,7 @@ public:
   STDMETHODIMP rename_file(BSTR file_path_src, BSTR file_path_dst);
   STDMETHODIMP delete_file(BSTR file_path);
   STDMETHODIMP get_entry(BSTR file_path, IFileEntry **file_entry);
+  STDMETHODIMP last_error();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(FileManager), CFileManager)

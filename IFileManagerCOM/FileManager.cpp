@@ -8,25 +8,30 @@
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+#include <boost/range/iterator_range.hpp>
 #include <wchar.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <winerror.h>
 
 namespace fs = boost::filesystem;
 
-// CFileManager
+CFileManager::CFileManager()
+  : last_error_(NOERROR)
+{
+}
 
 HRESULT STDMETHODCALLTYPE CFileManager::hello_world(BSTR *str_in)
 {
   if (!str_in)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
   CComBSTR str("Hello World!");
   *str_in = str.Detach();
 
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 HRESULT STDMETHODCALLTYPE CFileManager::file_list(BSTR file_path, 
@@ -35,7 +40,7 @@ HRESULT STDMETHODCALLTYPE CFileManager::file_list(BSTR file_path,
 {
   if (!file_entry_list)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, S_FALSE);
+    return set_last_error(E_INVALIDARG);
   }
 
   CComSafeArray<VARIANT> list;
@@ -92,22 +97,26 @@ HRESULT STDMETHODCALLTYPE CFileManager::file_list(BSTR file_path,
     free(drives_str);
 
     *file_entry_list = list.Detach();
-    return S_OK;
+    return set_last_error(NOERROR);
   }
 
   fs::path dir(file_path);
   //else get list of dirs & files in file_entry
   if (!fs::exists(dir))
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_PATH_NOT_FOUND);
+    return set_last_error(ERROR_PATH_NOT_FOUND);
   }
 
-  fs::directory_iterator end_it;
-  for (fs::directory_iterator it(dir); it != end_it; ++it)
+  if (!fs::is_directory(dir))
+  {
+    return set_last_error(ERROR_DIRECTORY);
+  }
+
+  for (auto& it : boost::make_iterator_range(fs::directory_iterator(dir), fs::directory_iterator()))
   {
     CComObject<CFileEntry>* file_entry = NULL;
-    HRESULT hr = get_entry((BSTR)it->path().c_str(), (IFileEntry**)&file_entry);
-    if (SUCCEEDED(hr))
+    HRESULT hr = get_entry((BSTR)it.path().c_str(), (IFileEntry**)&file_entry);
+    if (!hr)
     {
       VARIANT var_entry;
       var_entry.vt = VT_UNKNOWN;
@@ -118,34 +127,35 @@ HRESULT STDMETHODCALLTYPE CFileManager::file_list(BSTR file_path,
 
   *file_entry_list = list.Detach();
 
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 STDMETHODIMP CFileManager::create_file(BSTR path_src)
 {
   if (!path_src)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   fs::path file(path_src);
-  if (!fs::exists(file))
+  boost::system::error_code ec;
+  if (!fs::exists(file, ec))
   {
     std::ofstream outfile(file.c_str());
-    if (fs::exists(file))
+    if (fs::exists(file, ec))
     {
       outfile << "Created file from FileManagerCOM!" << std::endl;
-      return S_OK;
+      return set_last_error(NOERROR);
     }
   }
-  return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, S_FALSE);
+  return set_last_error(ec.value());
 }
 
 STDMETHODIMP CFileManager::create_folder(BSTR folder_path)
 {
   if (!folder_path)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   fs::path folder(folder_path);
@@ -155,97 +165,97 @@ STDMETHODIMP CFileManager::create_folder(BSTR folder_path)
     fs::create_directory(folder, ec);
     if (ec)
     {
-      return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, ec.value());
+      return set_last_error(ec.value());
     }
   }
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 STDMETHODIMP CFileManager::copy_file(BSTR file_path_src, BSTR file_path_dst)
 {
   if (!file_path_src || !file_path_dst)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   fs::path src(file_path_src);
   fs::path dst(file_path_dst);
   if (!fs::exists(src) || fs::exists(dst))
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_PATH_NOT_FOUND);
+    return set_last_error(ERROR_PATH_NOT_FOUND);
   }
 
   boost::system::error_code ec;
   fs::copy_file(src, dst, ec);
   if (ec)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, ec.value());
+    return set_last_error(ec.value());
   }
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 STDMETHODIMP CFileManager::rename_file(BSTR file_path_src, BSTR file_path_dst)
 {
   if (!file_path_src || !file_path_dst)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   fs::path src(file_path_src);
   fs::path dst(file_path_dst);
   if (!fs::exists(src) || fs::exists(dst))
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   boost::system::error_code ec;
   fs::rename(src, dst, ec);
   if (ec)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, ec.value());
+    return set_last_error(ec.value());
   }
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 STDMETHODIMP CFileManager::delete_file(BSTR file_path)
 {
   if (!file_path)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
 
   fs::path src(file_path);
   if (!fs::exists(src))
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_PATH_NOT_FOUND);
+    return set_last_error(ERROR_PATH_NOT_FOUND);
   }
 
   boost::system::error_code ec;
   fs::remove_all(src, ec);
   if (ec)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, ec.value());
+    return set_last_error(ec.value());
   }
-  return S_OK;
+  return set_last_error(NOERROR);
 }
 
 STDMETHODIMP CFileManager::get_entry(BSTR file_path, IFileEntry **file_entry_out)
 {
   if (!file_path || !file_entry_out)
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_INVALIDARG);
+    return set_last_error(E_INVALIDARG);
   }
   *file_entry_out = NULL;
 
   fs::path src(file_path);
   if (!fs::exists(src))
   {
-    return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, E_PATH_NOT_FOUND);
+    return set_last_error(ERROR_PATH_NOT_FOUND);
   }
 
   boost::system::error_code ec;
   fs::file_status status = fs::status(src, ec);
-  if (!ec)
+  if (!ec || ec.value() == ERROR_SHARING_VIOLATION)
   {
     struct _stat64 file_stat;
     std::time_t created_time = 0;
@@ -256,6 +266,32 @@ STDMETHODIMP CFileManager::get_entry(BSTR file_path, IFileEntry **file_entry_out
       created_time = file_stat.st_ctime;
       modified_time = file_stat.st_mtime;
       file_size = file_stat.st_size;
+
+      if (ec.value() == ERROR_SHARING_VIOLATION)
+      {
+        fs::perms perms = fs::no_perms;
+        if (file_stat.st_mode & S_IREAD)
+        {
+          perms |= fs::owner_read;
+        }
+        if (file_stat.st_mode & S_IWRITE)
+        {
+          perms |= fs::owner_read;
+        }
+        if (file_stat.st_mode & S_IEXEC)
+        {
+          perms |= fs::owner_exe;
+        }
+        status.permissions(perms);
+      }
+    }
+
+    if (ec.value() == ERROR_SHARING_VIOLATION)
+    {
+      if (DWORD attrs = GetFileAttributes(file_path) != INVALID_FILE_ATTRIBUTES)
+      {
+        status.type((attrs & FILE_ATTRIBUTE_DIRECTORY) ? fs::directory_file : fs::regular_file);
+      }
     }
 
     CComObject<CFileEntry> *file_entry = new CComObject<CFileEntry>();
@@ -267,11 +303,24 @@ STDMETHODIMP CFileManager::get_entry(BSTR file_path, IFileEntry **file_entry_out
       modified_time
      );
     *file_entry_out = file_entry;
-    return S_OK;
+    return set_last_error(NOERROR);
   }
 
-  return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, ec.value());
+  return set_last_error(ec.value());
 }
 
+STDMETHODIMP CFileManager::last_error()
+{
+  return last_error_;
+}
 
-
+STDMETHODIMP CFileManager::set_last_error(HRESULT error_code)
+{
+  if (error_code != NOERROR)
+  {
+    last_error_ = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_NULL, error_code);
+    return S_FALSE;
+  }
+  last_error_ = NOERROR;
+  return S_OK;
+}

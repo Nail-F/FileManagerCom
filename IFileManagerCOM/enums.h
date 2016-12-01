@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0595 */
-/* at Mon Nov 21 12:42:18 2016
+/* at Thu Dec 01 10:21:45 2016
  */
 /* Compiler settings for enums.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0595 
@@ -79,19 +79,28 @@ enum enum_file_type
 
 enum enum_permissions
     {
-        P_NONE	= 0,
-        P_READ	= 0x1,
-        P_WRITE	= 0x2,
-        P_EXEC	= 0x4,
-        P_ALL	= 0x7
-    } ;
-
-enum enum_error
-    {
-        E_SUCCESS	= 0,
-        E_FILE_NOT_FOUND	= ( E_SUCCESS + 1 ) ,
-        E_PATH_NOT_FOUND	= ( E_FILE_NOT_FOUND + 1 ) ,
-        E_ACCESS_DENIED	= ( E_PATH_NOT_FOUND + 1 ) 
+        no_perms	= 0,
+        owner_read	= 0400,
+        owner_write	= 0200,
+        owner_exe	= 0100,
+        owner_all	= 0700,
+        group_read	= 040,
+        group_write	= 020,
+        group_exe	= 010,
+        group_all	= 070,
+        others_read	= 04,
+        others_write	= 02,
+        others_exe	= 01,
+        others_all	= 07,
+        all_all	= 0777,
+        set_uid_on_exe	= 04000,
+        set_gid_on_exe	= 02000,
+        sticky_bit	= 01000,
+        perms_mask	= 07777,
+        perms_not_known	= 0xffff,
+        add_perms	= 0x1000,
+        remove_perms	= 0x2000,
+        symlink_perms	= 0x4000
     } ;
 
 

@@ -9,7 +9,7 @@
 CFileEntry::CFileEntry()
   : file_path_()
   , file_type_(FT_UNKNOWN)
-  , permissions_(P_NONE)
+  , permissions_(no_perms)
 {
 
 }
@@ -17,7 +17,7 @@ CFileEntry::CFileEntry()
 CFileEntry::CFileEntry(const std::wstring& file_path, int file_type, int permissions, std::size_t size_bytes, std::time_t created_date, std::time_t modified_date)
   : file_path_(file_path)
   , file_type_(file_type)
-  , permissions_(permissions)
+  , permissions_(static_cast<enum_permissions>(permissions))
   , size_bytes_(size_bytes)
   , created_date_(created_date)
   , modified_date_(modified_date)
@@ -28,7 +28,7 @@ STDMETHODIMP CFileEntry::init(const std::wstring& file_path, int file_type, int 
 {
   file_path_ = file_path;
   file_type_ = file_type;
-  permissions_ = permissions;
+  permissions_ = static_cast<enum_permissions>(permissions);
   size_bytes_ = size_bytes;
   created_date_ = created_date;
   modified_date_ = modified_date;

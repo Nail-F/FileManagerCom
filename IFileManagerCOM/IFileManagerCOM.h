@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0595 */
-/* at Mon Nov 21 12:42:15 2016
+/* at Thu Dec 01 10:21:41 2016
  */
 /* Compiler settings for IFileManagerCOM.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0595 
@@ -285,11 +285,21 @@ EXTERN_C const IID IID_IComponentRegistrar;
 #endif 	/* __IComponentRegistrar_INTERFACE_DEFINED__ */
 
 
+
+#ifndef __IFileManagerCOMLib_LIBRARY_DEFINED__
+#define __IFileManagerCOMLib_LIBRARY_DEFINED__
+
+/* library IFileManagerCOMLib */
+/* [custom][version][uuid] */ 
+
+
+EXTERN_C const IID LIBID_IFileManagerCOMLib;
+
 #ifndef __IFileManager_INTERFACE_DEFINED__
 #define __IFileManager_INTERFACE_DEFINED__
 
 /* interface IFileManager */
-/* [unique][nonextensible][dual][uuid][object] */ 
+/* [unique][nonextensible][oleautomation][dual][uuid][object] */ 
 
 
 EXTERN_C const IID IID_IFileManager;
@@ -328,6 +338,8 @@ EXTERN_C const IID IID_IFileManager;
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE get_entry( 
             /* [in] */ BSTR file_path,
             /* [out] */ IFileEntry **file_entry) = 0;
+        
+        virtual /* [id] */ HRESULT STDMETHODCALLTYPE last_error( void) = 0;
         
     };
     
@@ -424,6 +436,9 @@ EXTERN_C const IID IID_IFileManager;
             /* [in] */ BSTR file_path,
             /* [out] */ IFileEntry **file_entry);
         
+        /* [id] */ HRESULT ( STDMETHODCALLTYPE *last_error )( 
+            IFileManager * This);
+        
         END_INTERFACE
     } IFileManagerVtbl;
 
@@ -484,6 +499,9 @@ EXTERN_C const IID IID_IFileManager;
 #define IFileManager_get_entry(This,file_path,file_entry)	\
     ( (This)->lpVtbl -> get_entry(This,file_path,file_entry) ) 
 
+#define IFileManager_last_error(This)	\
+    ( (This)->lpVtbl -> last_error(This) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -494,16 +512,6 @@ EXTERN_C const IID IID_IFileManager;
 
 #endif 	/* __IFileManager_INTERFACE_DEFINED__ */
 
-
-
-#ifndef __IFileManagerCOMLib_LIBRARY_DEFINED__
-#define __IFileManagerCOMLib_LIBRARY_DEFINED__
-
-/* library IFileManagerCOMLib */
-/* [custom][version][uuid] */ 
-
-
-EXTERN_C const IID LIBID_IFileManagerCOMLib;
 
 EXTERN_C const CLSID CLSID_CompReg;
 
